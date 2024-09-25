@@ -1,0 +1,9 @@
+from_delivery_to_discovery/
+├── main.py
+├── models.py
+├── services/
+│   ├── authentication.py
+│   ├── ticket_provider.py
+│   ├── code_analysis.py
+│   ├── llm_integration.py
+├── requirements.txt
