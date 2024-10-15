@@ -3,3 +3,5 @@ uvicorn
 pydantic
 openai
 tqdm
+psycopg2-binary
+sqlalchemy
