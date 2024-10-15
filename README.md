@@ -116,16 +116,13 @@ Lista de dependencias necesarias para ejecutar la aplicación.
 Cómo Ejecutar la Aplicación
 
     Instalar las Dependencias:
-
-    bash
-
+```
 pip install -r requirements.txt
 
 Ejecutar el Servidor:
 
-bash
-
 uvicorn main:app --reload
+```
 
 Probar los Endpoints:
 
