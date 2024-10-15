@@ -5,3 +5,4 @@ openai
 tqdm
 psycopg2-binary
 sqlalchemy
+numpy
