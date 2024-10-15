@@ -1,8 +1,22 @@
-def generate_ticket_content(ticket, code_diff, project_summary):
-    # Lógica para interactuar con el LLM y generar contenido
-    generated_description = f"Descripción generada para el ticket {ticket.id}"
-    acceptance_criteria = ["Criterio de aceptación 1", "Criterio de aceptación 2"]
-    return {
-        "description": generated_description,
-        "acceptance_criteria": acceptance_criteria
-    }
+import openai
+from models import Ticket
+
+def generate_ticket_content(ticket: Ticket, code_diff_analysis: str, project_summary: str):
+    try:
+        prompt = f"""
+        Ticket ID: {ticket.id}
+        Título: {ticket.title}
+        Resumen del Proyecto: {project_summary}
+        Análisis del Código:
+        {code_diff_analysis}
+        Genera una descripción detallada y criterios de aceptación para este ticket.
+        """
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            max_tokens=500
+        )
+        content = response.choices[0].text.strip()
+        return {"description": content, "acceptance_criteria": ["Criterio 1", "Criterio 2"]}
+    except Exception as e:
+        raise Exception(f"Error al generar contenido del ticket: {e}")
