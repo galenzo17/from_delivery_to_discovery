@@ -1,7 +1,15 @@
 import os
 import subprocess
-from typing import List
+from typing import List, Tuple
 from embeddings import generate_embeddings, search_similar_code
+from multiprocessing import Pool, cpu_count
+from tqdm import tqdm
+
+# Variable global para almacenar el progreso
+progress = {
+    'total': 0,
+    'completed': 0
+}
 
 def get_gitignored_files() -> List[str]:
     try:
@@ -29,18 +37,40 @@ def analyze_code_diff() -> str:
     except Exception as e:
         raise Exception(f"Error al analizar el diff del código: {e}")
 
+def process_file(file_path: str) -> Tuple[str, str]:
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        # Aquí puedes agregar lógica adicional si es necesario
+        return (file_path, content)
+    except Exception as e:
+        return (file_path, f"Error al procesar el archivo: {e}")
+
 def scan_project() -> str:
     try:
-        gitignored_files = get_gitignored_files()
+        gitignored_files = set(get_gitignored_files())
         project_files = []
         for root, dirs, files in os.walk('.'):
             # Excluir directorios ocultos como .git
             dirs[:] = [d for d in dirs if not d.startswith('.')]
             for file in files:
                 filepath = os.path.relpath(os.path.join(root, file))
-                if not any(filepath.startswith(ignored) for ignored in gitignored_files):
+                if filepath not in gitignored_files:
                     project_files.append(filepath)
-        project_summary = f"Total de archivos (excluyendo .gitignore): {len(project_files)}"
+        total_files = len(project_files)
+        
+        # Actualizar el progreso total
+        progress['total'] = total_files
+        progress['completed'] = 0
+
+        num_workers = cpu_count()
+        with Pool(num_workers) as pool:
+            # Usar tqdm para mostrar la barra de progreso
+            for _ in tqdm(pool.imap_unordered(process_file, project_files), total=total_files, desc="Escaneando archivos"):
+                # Actualizar el progreso completado
+                progress['completed'] += 1
+
+        project_summary = f"Total de archivos (excluyendo .gitignore): {total_files}"
         return project_summary
     except Exception as e:
         raise Exception(f"Error al escanear el proyecto: {e}")
