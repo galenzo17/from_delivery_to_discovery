@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import List, Optional
 
 class User(BaseModel):
     username: str
@@ -8,9 +8,9 @@ class User(BaseModel):
 class Ticket(BaseModel):
     id: str
     title: str
-    description: Optional[str]
-    acceptance_criteria: Optional[List[str]]
+    description: Optional[str] = None
+    acceptance_criteria: Optional[List[str]] = None
 
 class TicketUpdateRequest(BaseModel):
-    description: Optional[str]
-    acceptance_criteria: Optional[List[str]]
+    description: Optional[str] = None
+    acceptance_criteria: Optional[List[str]] = None
